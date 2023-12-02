@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:pos_coffe/utils/reusable_textwidget.dart';
 
@@ -11,6 +13,20 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  List info = [];
+
+  _initData() {
+    DefaultAssetBundle.of(context).loadString("json/info.json").then((value) {
+      info = jsonDecode(value);
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _initData();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,9 +36,9 @@ class _MyHomePageState extends State<MyHomePage> {
         title: const Text(
           "Menu",
           style: TextStyle(
-              color: TextColors.bigTextColor,
-              fontWeight: FontWeight.bold,
-              fontFamily: 'Roboto'),
+            color: TextColors.bigTextColor,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         centerTitle: true,
       ),
@@ -41,62 +57,48 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.black,
-                  border: Border.all(width: 1, color: Colors.grey),
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                height: 80,
-                width: 80,
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  boxShadow: const [
-                    BoxShadow(
-                        color: Colors.white,
-                        offset: Offset(2.0, 2.1),
-                        blurRadius: 6.0)
-                  ],
-                  // color: Colors.white54,
-                  // border: Border.all(width: 1, color: Colors.grey),
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                height: 80,
-                width: 80,
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.no_drinks,
-                      color: ColorsApp.primaryColor,
-                    ),
-                    Center(
-                      child: Row(),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.black,
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                height: 80,
-                width: 80,
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.black,
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                height: 80,
-                width: 80,
-              ),
-            ],
+          Expanded(
+            child: ListView.builder(
+                padding: const EdgeInsets.only(left: 18),
+                scrollDirection: Axis.horizontal,
+                itemCount: info.length,
+                itemBuilder: (_, i) {
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.only(right: 12),
+                        padding: const EdgeInsets.only(bottom: 3),
+                        height: 80,
+                        width: 80,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10.0),
+                          image: DecorationImage(
+                            image: AssetImage(info[i]['img']),
+                          ),
+                          boxShadow: const [
+                            BoxShadow(
+                              blurRadius: 3,
+                              offset: Offset(-0.1, 0.5),
+                            ),
+                          ],
+                        ),
+                        child: Center(
+                          child: Align(
+                            alignment: Alignment.bottomCenter,
+                            child: Text(
+                              info[i]["title"],
+                              style: const TextStyle(
+                                  color: TextColors.mainTextColor),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                }),
           ),
         ],
       ),
